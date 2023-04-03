@@ -5,6 +5,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
 import java.io.File;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -37,12 +38,12 @@ public class BackupProperties {
 
     @Data
     public static class SqliteTarget {
-        private File outPutDir;
+        private List<File> outPutDir;
     }
 
     @Data
     public static class SqlFileTarget {
-        private File outPutDir;
+        private List<File> outPutDir;
     }
 
     @Data

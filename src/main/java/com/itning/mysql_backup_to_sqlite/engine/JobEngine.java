@@ -67,7 +67,7 @@ public class JobEngine implements Runnable {
 
     private void handlePlugin(List<TargetResult> files) throws Exception {
         BackupProperties.TencentCloudCOSPlugin tencentCloudCOSPlugin = job.getTencentCloudCosPlugin();
-        if (Objects.nonNull(tencentCloudCOSPlugin)) {
+        if (Objects.nonNull(tencentCloudCOSPlugin) && Objects.nonNull(tencentCloudCOSPlugin.getBucketName()) && !tencentCloudCOSPlugin.getBucketName().isBlank()) {
             TENCENT_CLOUD_COS_PLUGIN.start(tencentCloudCOSPlugin, files);
         }
     }

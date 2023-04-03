@@ -22,7 +22,7 @@ import java.util.Map;
  */
 public class SqlFileTarget implements Target {
     @Override
-    public TargetResult start(File outPutDir, String jobName, DataEntry dataEntry) throws Exception {
+    public TargetResult start(List<File> outPutDir, String jobName, DataEntry dataEntry) throws Exception {
         Map<String, List<ColumnInfo>> columnInfoMap = dataEntry.getColumnInfoMap();
         Map<String, List<RowData>> dataInfoMap = dataEntry.getDataInfoMap();
 
@@ -70,7 +70,15 @@ public class SqlFileTarget implements Target {
                 String insertSql = insertSqlBuilder.toString();
                 sql.append(insertSql, 0, insertSql.length() - 1).append(");\n");
             }
-            result.add(write2File(outPutDir, jobName, tableName, sql.append("-- DML end\n").toString()));
+
+            String sqlContent = sql.append("-- DML end\n").toString();
+            for (int i = 0; i < outPutDir.size(); i++) {
+                if (i == 0) {
+                    result.add(write2File(outPutDir.get(i), jobName, tableName, sqlContent));
+                } else {
+                    write2File(outPutDir.get(i), jobName, tableName, sqlContent);
+                }
+            }
         }
         return new TargetResult(result, TargetResult.TargetType.SQL_FILE);
     }

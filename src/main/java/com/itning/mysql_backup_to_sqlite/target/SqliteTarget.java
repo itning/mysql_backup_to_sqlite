@@ -6,6 +6,8 @@ import com.itning.mysql_backup_to_sqlite.entry.RowData;
 import com.itning.mysql_backup_to_sqlite.entry.TargetResult;
 
 import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -32,9 +34,9 @@ public class SqliteTarget implements Target {
     }
 
     @Override
-    public TargetResult start(File outPutDir, String jobName, DataEntry dataEntry) throws Exception {
-        File dbFile = getDbFile(outPutDir, jobName);
-        try (Connection connection = DriverManager.getConnection("jdbc:sqlite:" + getDbFile(outPutDir, jobName))) {
+    public TargetResult start(List<File> outPutDir, String jobName, DataEntry dataEntry) throws Exception {
+        File dbFile = getDbFile(outPutDir.get(0), jobName);
+        try (Connection connection = DriverManager.getConnection("jdbc:sqlite:" + getDbFile(outPutDir.get(0), jobName))) {
             Map<String, List<ColumnInfo>> columnInfoMap = dataEntry.getColumnInfoMap();
             Map<String, List<RowData>> dataInfoMap = dataEntry.getDataInfoMap();
             for (Map.Entry<String, List<ColumnInfo>> tableItem : columnInfoMap.entrySet()) {
@@ -71,6 +73,10 @@ public class SqliteTarget implements Target {
                     }
                 }
             }
+        }
+
+        for (int i = 1; i < outPutDir.size(); i++) {
+            Files.copy(dbFile.toPath(), new File(outPutDir.get(i), dbFile.getName()).toPath(), StandardCopyOption.REPLACE_EXISTING);
         }
         return new TargetResult(Collections.singletonList(dbFile), TargetResult.TargetType.SQLITE);
     }

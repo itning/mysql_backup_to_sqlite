@@ -31,6 +31,7 @@ build/
 
 ### VS Code ###
 .vscode/
+application-local.properties
 application-nas.properties
 *.db
 *.sql
