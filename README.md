@@ -1,5 +1,7 @@
 # mysql_backup_to_sqlite MySQL数据库备份
 
+[![compile](https://github.com/itning/mysql_backup_to_sqlite/actions/workflows/compile_test.yml/badge.svg)](https://github.com/itning/mysql_backup_to_sqlite/actions/workflows/compile_test.yml)
+
 支持数据源：
 
 - [x] MySQL
