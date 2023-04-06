@@ -3,6 +3,7 @@ package com.itning.mysql_backup_to_sqlite.engine;
 import com.itning.mysql_backup_to_sqlite.config.BackupProperties;
 import com.itning.mysql_backup_to_sqlite.entry.DataEntry;
 import com.itning.mysql_backup_to_sqlite.entry.TargetResult;
+import com.itning.mysql_backup_to_sqlite.plugin.SendMailPlugin;
 import com.itning.mysql_backup_to_sqlite.plugin.TencentCloudCOSPlugin;
 import com.itning.mysql_backup_to_sqlite.source.MySQLSource;
 import com.itning.mysql_backup_to_sqlite.target.SqlFileTarget;
@@ -27,10 +28,12 @@ public class JobEngine implements Runnable {
 
     private final String name;
     private final BackupProperties.Job job;
+    private final SendMailPlugin sendMailPlugin;
 
     public JobEngine(String name, BackupProperties.Job job) {
         this.name = name;
         this.job = job;
+        sendMailPlugin = new SendMailPlugin();
     }
 
     @Override
@@ -39,7 +42,7 @@ public class JobEngine implements Runnable {
         try {
             DataEntry dataEntry = handleSource();
             List<TargetResult> results = handleTarget(dataEntry);
-            handlePlugin(results);
+            handlePlugin(dataEntry, results);
         } catch (Throwable e) {
             log.error("handler job {} exception", name, e);
         } finally {
@@ -65,10 +68,8 @@ public class JobEngine implements Runnable {
         return results;
     }
 
-    private void handlePlugin(List<TargetResult> files) throws Exception {
-        BackupProperties.TencentCloudCOSPlugin tencentCloudCOSPlugin = job.getTencentCloudCosPlugin();
-        if (Objects.nonNull(tencentCloudCOSPlugin) && Objects.nonNull(tencentCloudCOSPlugin.getBucketName()) && !tencentCloudCOSPlugin.getBucketName().isBlank()) {
-            TENCENT_CLOUD_COS_PLUGIN.start(tencentCloudCOSPlugin, files);
-        }
+    private void handlePlugin(DataEntry dataEntry, List<TargetResult> files) throws Exception {
+        TENCENT_CLOUD_COS_PLUGIN.start(name, job, dataEntry, files);
+        sendMailPlugin.start(name, job, dataEntry, files);
     }
 }

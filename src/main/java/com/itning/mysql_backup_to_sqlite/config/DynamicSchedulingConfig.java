@@ -9,6 +9,7 @@ import org.springframework.scheduling.annotation.SchedulingConfigurer;
 import org.springframework.scheduling.config.ScheduledTaskRegistrar;
 
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * @author ning.wang
@@ -28,6 +29,9 @@ public class DynamicSchedulingConfig implements SchedulingConfigurer {
 
     @Override
     public void configureTasks(ScheduledTaskRegistrar taskRegistrar) {
+        if (Objects.isNull(backupProperties.getJob())) {
+            return;
+        }
         for (Map.Entry<String, BackupProperties.Job> item : backupProperties.getJob().entrySet()) {
             taskRegistrar.addCronTask(new JobEngine(item.getKey(), item.getValue()), item.getValue().getCron());
         }

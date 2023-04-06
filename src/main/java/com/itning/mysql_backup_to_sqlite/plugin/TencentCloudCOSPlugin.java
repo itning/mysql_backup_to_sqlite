@@ -1,6 +1,7 @@
 package com.itning.mysql_backup_to_sqlite.plugin;
 
 import com.itning.mysql_backup_to_sqlite.config.BackupProperties;
+import com.itning.mysql_backup_to_sqlite.entry.DataEntry;
 import com.itning.mysql_backup_to_sqlite.entry.TargetResult;
 import com.qcloud.cos.COSClient;
 import com.qcloud.cos.ClientConfig;
@@ -27,7 +28,11 @@ import java.util.Objects;
 public class TencentCloudCOSPlugin implements Plugin {
 
     @Override
-    public void start(BackupProperties.TencentCloudCOSPlugin tencentCloudCOSPlugin, List<TargetResult> results) throws Exception {
+    public void start(String name, BackupProperties.Job job, DataEntry dataEntry, List<TargetResult> results) throws Exception {
+        BackupProperties.TencentCloudCOSPlugin tencentCloudCOSPlugin = job.getTencentCloudCosPlugin();
+        if (Objects.isNull(tencentCloudCOSPlugin) || Objects.isNull(tencentCloudCOSPlugin.getBucketName()) || tencentCloudCOSPlugin.getBucketName().isBlank()) {
+            return;
+        }
         COSCredentials cred = new BasicCOSCredentials(tencentCloudCOSPlugin.getSecretId(), tencentCloudCOSPlugin.getSecretKey());
         Region region = new Region(tencentCloudCOSPlugin.getRegionName());
         ClientConfig clientConfig = new ClientConfig(region);
