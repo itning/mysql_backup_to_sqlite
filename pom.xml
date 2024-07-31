@@ -47,7 +47,7 @@
         <dependency>
             <groupId>com.qcloud</groupId>
             <artifactId>cos_api</artifactId>
-            <version>5.6.220</version>
+            <version>5.6.223</version>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
